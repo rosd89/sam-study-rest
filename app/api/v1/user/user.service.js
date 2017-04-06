@@ -1,4 +1,3 @@
-
 const defaultDataType = 'application/json';
 
 /**
@@ -9,13 +8,8 @@ const defaultDataType = 'application/json';
  */
 exports.show = accept => {
     const funcIndex = {
-        'application/json' : (query, params, res) => {
-            const {userId} = params;
-            return res.json({userId});
-        },
-        'application/xml' : (query, params, res) => {
-            console.log(params);
-        }
+        'application/json' : showToJson,
+        'application/xml' : showToXml
     };
 
     if(!funcIndex[accept]){
@@ -23,4 +17,27 @@ exports.show = accept => {
     }
 
     return funcIndex[accept];
+};
+
+/**
+ * 유저 데이터 가져오기 - JSON
+ *
+ * @param query
+ * @param params
+ * @param res
+ */
+const showToJson = (query, params, res) => {
+    const {userId} = params;
+    return res.json({userId});
+};
+
+/**
+ * 유저 데이터 가져오기 - XML
+ *
+ * @param query
+ * @param params
+ * @param res
+ */
+const showToXml = (query, params, res) => {
+    console.log(params);
 };
