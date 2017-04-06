@@ -1,4 +1,5 @@
 const defaultDataType = 'application/json';
+const xml = require('xml');
 
 /**
  * 유저 데이터 가져오기 Service
@@ -9,7 +10,7 @@ const defaultDataType = 'application/json';
 exports.show = accept => {
     const funcIndex = {
         'application/json' : showToJson,
-        'application/xml' : showToXml
+        'text/xml' : showToXml
     };
 
     if(!funcIndex[accept]){
@@ -39,5 +40,7 @@ const showToJson = (query, params, res) => {
  * @param res
  */
 const showToXml = (query, params, res) => {
-    console.log(params);
+    const {userId} = params;
+    res.set('Content-Type', 'text/xml');
+    res.send(xml({userId}));
 };
