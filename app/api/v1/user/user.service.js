@@ -9,11 +9,11 @@ const xml = require('xml');
  */
 exports.show = accept => {
     const funcIndex = {
-        'application/json' : showToJson,
-        'text/xml' : showToXml
+        'application/json': showToJson,
+        'text/xml': showToXml
     };
 
-    if(!funcIndex[accept]){
+    if (!funcIndex[accept]) {
         accept = defaultDataType;
     }
 
@@ -23,24 +23,32 @@ exports.show = accept => {
 /**
  * 유저 데이터 가져오기 - JSON
  *
- * @param query
- * @param params
+ * @param user
  * @param res
  */
-const showToJson = (query, params, res) => {
-    const {userId} = params;
-    return res.json({userId});
+const showToJson = (user, res) => {
+    return res.json({
+        id: user.id,
+        name: user.pw,
+        updatedAt: user.updatedAt,
+        createdAt: user.createdAt
+    });
 };
 
 /**
  * 유저 데이터 가져오기 - XML
  *
- * @param query
- * @param params
+ * @param user
  * @param res
  */
-const showToXml = (query, params, res) => {
-    const {userId} = params;
+const showToXml = (user, res) => {
     res.set('Content-Type', 'text/xml');
-    res.send(xml({userId}));
+    res.send(xml({
+        user: [
+            {id: user.id},
+            {name: user.pw},
+            {updatedAt: user.updatedAt.toISOString()},
+            {createdAt: user.createdAt.toISOString()}
+        ]
+    }));
 };

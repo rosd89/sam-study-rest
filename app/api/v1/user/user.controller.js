@@ -1,5 +1,4 @@
 const userService = require('./user.service');
-
 const retMsg = require('../util/return.msg');
 
 const userData = function (user) {
@@ -74,10 +73,10 @@ exports.index = (req, res) => {
     const page = parseInt(req.query.page);
     const size = parseInt(req.query.size);
 
-    if(isNaN(page) || page < 0){
+    if (isNaN(page) || page < 0) {
         return retMsg.error400InvalidCall(res, 'ERROR_INVALID_PARAM', 'page');
     }
-    else if(isNaN(size) || size < 1) {
+    else if (isNaN(size) || size < 1) {
         return retMsg.error400InvalidCall(res, 'ERROR_INVALID_PARAM', 'size');
     }
 
@@ -91,10 +90,10 @@ exports.index = (req, res) => {
         const aTime = userA.updatedAt.getTime();
         const bTime = userB.updatedAt.getTime();
 
-        if(aTime > bTime) {
+        if (aTime > bTime) {
             return 1
         }
-        else if(aTime < bTime) {
+        else if (aTime < bTime) {
             return -1
         }
         return 0;
@@ -115,8 +114,25 @@ exports.index = (req, res) => {
  * @param res
  */
 exports.show = (req, res) => {
+    const id = req.params.id;
+
+    const findUser = users.filter(user => {
+        // 활성화된 유저만 검색
+        if (user.enable === 'disable') {
+            return false;
+        }
+
+        return user.id === id;
+    })[0];
+
+    if (!findUser) {
+       return retMsg.error404NotFound(res);
+    }
+
     const accept = req.header('Accept');
-    return userService.show(accept)(req.query, req.params, res);
+    res.header('Last-Modified', findUser.updatedAt.toISOString());
+
+    return userService.show(accept)(findUser, res);
 };
 
 /**
