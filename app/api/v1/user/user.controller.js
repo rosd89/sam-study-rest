@@ -12,7 +12,56 @@ const userData = function (user) {
 };
 
 // 유저 데이터를 저장하는 공간
-const users = [];
+const users = [
+    new userData({
+        id: 'red',
+        pw: '1111',
+        name: '아무개1',
+        enable: 'enable',
+        updatedAt: new Date(),
+        createdAt: new Date()
+    }),
+    new userData({
+        id: 'blue',
+        pw: '1111',
+        name: '아무개2',
+        enable: 'enable',
+        updatedAt: new Date(),
+        createdAt: new Date()
+    }),
+    new userData({
+        id: 'yellow',
+        pw: '1111',
+        name: '아무개3',
+        enable: 'enable',
+        updatedAt: new Date(),
+        createdAt: new Date()
+    }),
+    new userData({
+        id: 'pink',
+        pw: '1111',
+        name: '아무개4',
+        enable: 'enable',
+        updatedAt: new Date(),
+        createdAt: new Date()
+    }),
+    new userData({
+        id: 'black',
+        pw: '1111',
+        name: '아무개5',
+        enable: 'disable',
+        updatedAt: new Date(),
+        createdAt: new Date()
+    }),
+    new userData({
+        id: 'gold',
+        pw: '1111',
+        name: '아무개6',
+        enable: 'enable',
+        updatedAt: new Date(),
+        createdAt: new Date()
+    })
+];
 
 /**
  * user 전체 리스트
@@ -21,9 +70,42 @@ const users = [];
  * @param res
  */
 exports.index = (req, res) => {
-    const {page, size} = req.query;
+    // 첫 페이지는 page 값이 0
+    const page = parseInt(req.query.page);
+    const size = parseInt(req.query.size);
 
+    if(isNaN(page) || page < 0){
+        return retMsg.error400InvalidCall(res, 'ERROR_INVALID_PARAM', 'page');
+    }
+    else if(isNaN(size) || size < 1) {
+        return retMsg.error400InvalidCall(res, 'ERROR_INVALID_PARAM', 'size');
+    }
 
+    const offset = page * size;
+
+    const findUsers = users.filter(user => {
+        return user.enable === 'enable'
+    }).slice(offset, offset + size);
+
+    const lastUpdatedTime = users.sort((userA, userB) => {
+        const aTime = userA.updatedAt.getTime();
+        const bTime = userB.updatedAt.getTime();
+
+        if(aTime > bTime) {
+            return 1
+        }
+        else if(aTime < bTime) {
+            return -1
+        }
+        return 0;
+    })[0];
+
+    res.header('Last-Modified', lastUpdatedTime.updatedAt.toISOString());
+
+    return retMsg.success200RetObj(res, {
+        totalCnt: users.length,
+        row: findUsers
+    });
 };
 
 /**
