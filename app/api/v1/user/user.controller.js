@@ -1,4 +1,18 @@
-const userService = require('./user.service.js');
+const userService = require('./user.service');
+
+const retMsg = require('../util/return.msg');
+
+const userData = function (user) {
+    this.id = user.id;
+    this.pw = user.pw;
+    this.name = user.name;
+    this.enable = user.enable;
+    this.updatedAt = user.updatedAt;
+    this.createdAt = user.createdAt;
+};
+
+// 유저 데이터를 저장하는 공간
+const users = [];
 
 /**
  * user 전체 리스트
@@ -7,6 +21,8 @@ const userService = require('./user.service.js');
  * @param res
  */
 exports.index = (req, res) => {
+    const {page, size} = req.query;
+
 
 };
 
@@ -28,7 +44,34 @@ exports.show = (req, res) => {
  * @param res
  */
 exports.create = (req, res) => {
+    const {id, pw, name} = req.body;
 
+    if (!id) {
+        return retMsg.error400InvalidCall(res, 'ERROR_MISSING_PARAM', 'id');
+    }
+    else if (!pw) {
+        return retMsg.error400InvalidCall(res, 'ERROR_MISSING_PARAM', 'pw');
+    }
+    else if (!name) {
+        return retMsg.error400InvalidCall(res, 'ERROR_MISSING_PARAM', 'name');
+    }
+
+    const user = new userData({
+        id, pw, name,
+        enable: 'enable',
+        updatedAt: new Date(),
+        createdAt: new Date()
+    });
+
+    users.push(user);
+
+    return retMsg.success201(res, {
+        id: user.id,
+        pw: user.pw,
+        name: user.name,
+        updatedAt: user.updatedAt,
+        createdAt: user.createdAt
+    });
 };
 
 /**
@@ -69,4 +112,25 @@ exports.patch = (req, res) => {
  */
 exports.destory = (req, res) => {
 
+};
+
+/**
+ * 유저 중복 체크 middle
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+exports.userDuplicateChecker = (req, res, next) => {
+    const id = req.body.id;
+
+    const findUser = users.filter(user => {
+        return id === user.id
+    });
+
+    if (findUser.length > 0) {
+        return retMsg.error400InvalidCall(res, 'ERROR_DUPLICATE', 'id');
+    }
+
+    return next();
 };
