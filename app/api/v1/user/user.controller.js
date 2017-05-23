@@ -1,5 +1,5 @@
 const userService = require('./user.service');
-const {convertUserData} = require('./user.util');
+const {convertUserData, convertUsersData} = require('./user.util');
 
 const retMsg = require('../util/return.msg');
 
@@ -21,13 +21,15 @@ exports.index = (req, res) => {
     return retMsg.error400InvalidCall(res, 'ERROR_INVALID_PARAM', 'size');
   }
 
-  const {totalCnt, users, lastUpdatedAt} = userService.findAll(page, size);
+  const {total, users, lastUpdatedAt} = userService.findAll(page, size);
+
+  const accept = req.header('Accept');
+  const convertVal = convertUsersData(accept);
 
   res.header('Last-Modified', lastUpdatedAt.toISOString());
-  return retMsg.success200RetObj(res, {
-    totalCnt: totalCnt,
-    row: users
-  });
+  res.set('Content-Type', convertVal.accept);
+
+  return retMsg.success200RetObj(res, convertVal.func(users, page, size, total));
 };
 
 /**

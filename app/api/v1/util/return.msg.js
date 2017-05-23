@@ -12,10 +12,10 @@ exports.undefinedCheck = v => v === undefined ? false : true;
 exports.success200 = res => res.status(200).json();
 
 // 200 - success return Model
-exports.success200RetObj = (res, obj) => res.status(200).json(obj);
+exports.success200RetObj = (res, obj) => res.status(200).send(obj);
 
 // 201 - success create
-exports.success201 = (res, obj) => res.status(201).json(obj);
+exports.success201 = (res, obj) => res.status(201).send(obj);
 
 // 204 - success delete
 exports.success204 = res => res.status(204).send();

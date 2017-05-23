@@ -20,12 +20,12 @@ const USER_DATA = [
 exports.findAll = (page, size) => {
   const offset = page * size;
 
-  const totalCnt = USER_DATA.length;
+  const total = USER_DATA.length;
   const users = USER_DATA.filter(user => {
     return user.enable === 'enable'
   }).slice(offset, offset + size);
 
-  const lastUpdatedTime = USER_DATA.sort((userA, userB) => {
+  const lastUpdatedAt = USER_DATA.sort((userA, userB) => {
     const aTime = userA.updatedAt.getTime();
     const bTime = userB.updatedAt.getTime();
 
@@ -38,8 +38,9 @@ exports.findAll = (page, size) => {
     return 0;
   })[0].updatedAt;
 
+  console.log(lastUpdatedAt);
   return {
-    totalCnt, users, lastUpdatedTime
+    total, users, lastUpdatedAt
   }
 };
 
