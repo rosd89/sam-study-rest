@@ -1,54 +1,85 @@
-const defaultDataType = 'application/json';
-const xml = require('xml');
+const userData = require('./user.data');
+
+// 유저 데이터를 저장하는 공간
+const USER_DATA = [
+  new userData('red', '1111', '아무개1', 'enable', new Date(), new Date()),
+  new userData('blue', '1111', '아무개2', 'enable', new Date(), new Date()),
+  new userData('yellow', '1111', '아무개3', 'enable', new Date(), new Date()),
+  new userData('pink', '1111', '아무개4', 'enable', new Date(), new Date()),
+  new userData('black', '1111', '아무개5', 'disable', new Date(), new Date()),
+  new userData('gold', '1111', '아무개6', 'enable', new Date(), new Date())
+];
 
 /**
- * 유저 데이터 가져오기 Service
+ * 유저 전체 리스트 데이터 가져오기 Service
  *
- * @param accept
- * @returns {{application/json: (function(*))}}
+ * @param page
+ * @param size
+ * @returns {{totalCnt: Number, users: Array.<*>, lastUpdatedTime: (Date|*|string|updatedAt)}}
  */
-exports.show = accept => {
-    const funcIndex = {
-        'application/json': showToJson,
-        'text/xml': showToXml
-    };
+exports.findAll = (page, size) => {
+  const offset = page * size;
 
-    if (!funcIndex[accept]) {
-        accept = defaultDataType;
+  const totalCnt = USER_DATA.length;
+  const users = USER_DATA.filter(user => {
+    return user.enable === 'enable'
+  }).slice(offset, offset + size);
+
+  const lastUpdatedTime = USER_DATA.sort((userA, userB) => {
+    const aTime = userA.updatedAt.getTime();
+    const bTime = userB.updatedAt.getTime();
+
+    if (aTime > bTime) {
+      return 1
     }
+    else if (aTime < bTime) {
+      return -1
+    }
+    return 0;
+  })[0].updatedAt;
 
-    return funcIndex[accept];
+  return {
+    totalCnt, users, lastUpdatedTime
+  }
 };
 
 /**
- * 유저 데이터 가져오기 - JSON
+ * 특정 User 데이터 가져오기 Service
  *
- * @param user
- * @param res
+ * @param id
  */
-const showToJson = (user, res) => {
-    return res.json({
-        id: user.id,
-        name: user.pw,
-        updatedAt: user.updatedAt,
-        createdAt: user.createdAt
-    });
-};
+exports.findOne = id => USER_DATA.filter(user => {
+  // 활성화된 유저만 검색
+  if (user.enable === 'disable') {
+    return false;
+  }
+
+  return user.id === id;
+})[0];
 
 /**
- * 유저 데이터 가져오기 - XML
+ * User 추가 Service
  *
- * @param user
- * @param res
+ * @param id
+ * @param pw
+ * @param name
+ * @returns {{id: *, pw: *, name: *, updatedAt: Date, createdAt: Date}}
  */
-const showToXml = (user, res) => {
-    res.set('Content-Type', 'text/xml');
-    res.send(xml({
-        user: [
-            {id: user.id},
-            {name: user.pw},
-            {updatedAt: user.updatedAt.toISOString()},
-            {createdAt: user.createdAt.toISOString()}
-        ]
-    }));
+exports.create = (id, pw, name) => {
+  const user = new userData({
+    id, pw, name,
+    enable: 'enable',
+    updatedAt: new Date(),
+    createdAt: new Date()
+  });
+
+  USER_DATA.push(user);
+
+  return {
+    id: user.id,
+    pw: user.pw,
+    name: user.name,
+    updatedAt: user.updatedAt,
+    createdAt: user.createdAt
+  };
 };
