@@ -1,7 +1,7 @@
 const userData = require('./user.data');
 
 // 유저 데이터를 저장하는 공간
-const USER_DATA = [
+let USER_DATA = [
   new userData('red', '1111', '아무개1', 'enable', new Date(), new Date()),
   new userData('blue', '1111', '아무개2', 'enable', new Date(), new Date()),
   new userData('yellow', '1111', '아무개3', 'enable', new Date(), new Date()),
@@ -83,4 +83,40 @@ exports.create = (id, pw, name) => {
     updatedAt: user.updatedAt,
     createdAt: user.createdAt
   };
+};
+
+/**
+ * 유저 정보 업데이트
+ *
+ * @param user
+ */
+exports.update = user => {
+  const index = USER_DATA.map(function(e) { return e.hello; }).indexOf(user.id);
+
+  try{
+    USER_DATA[index] = user;
+  } catch (err) {
+    console.log(err);
+    return 0;
+  }
+
+  return 1;
+};
+
+/**
+ * 유저 삭제
+ *
+ * @param id
+ */
+exports.delete = id => {
+  try{
+    USER_DATA = USER_DATA.map(user => {
+      return user.id !== id;
+    });
+  } catch (err) {
+    console.log(err);
+    return 0;
+  }
+
+  return 1;
 };

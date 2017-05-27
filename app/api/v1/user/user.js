@@ -18,11 +18,6 @@ router.post('/', userDuplicateChecker, create);
 // 유저 전체데이터 수정
 router.put('/:id', update);
 
-// 유저들의 특정 상태 값을 수정하기
-router.patch('/', patchAll);
-// 유저의 일부 값을 수정하기
-router.patch('/:id', patch);
-
 // 유저 삭제하기
 router.delete('/:id', destory);
 

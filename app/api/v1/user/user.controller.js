@@ -1,5 +1,5 @@
 const userService = require('./user.service');
-const {convertUserData, convertUsersData} = require('./user.util');
+const {convertUserData, convertUsersData, convertError400Data} = require('./user.util');
 
 const retMsg = require('../util/return.msg');
 
@@ -10,20 +10,20 @@ const retMsg = require('../util/return.msg');
  * @param res
  */
 exports.index = (req, res) => {
+  const accept = req.header('Accept');
   // 첫 페이지는 page 값이 0
   const page = parseInt(req.query.page);
   const size = parseInt(req.query.size);
 
   if (isNaN(page) || page < 0) {
-    return retMsg.error400InvalidCall(res, 'ERROR_INVALID_PARAM', 'page');
+    return retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_INVALID_PARAM', 'page'));
   }
   else if (isNaN(size) || size < 1) {
-    return retMsg.error400InvalidCall(res, 'ERROR_INVALID_PARAM', 'size');
+    return retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_INVALID_PARAM', 'size'));
   }
 
   const {total, users, lastUpdatedAt} = userService.findAll(page, size);
 
-  const accept = req.header('Accept');
   const convertVal = convertUsersData(accept);
 
   res.header('Last-Modified', lastUpdatedAt.toISOString());
@@ -39,7 +39,7 @@ exports.index = (req, res) => {
  * @param res
  */
 exports.show = (req, res) => {
-  const id = req.params.id;
+  const {id} = req.params;
 
   const user = userService.findOne(id);
 
@@ -63,24 +63,24 @@ exports.show = (req, res) => {
  * @param res
  */
 exports.create = (req, res) => {
+  const accept = req.header('Accept');
   const {id, pw, name} = req.body;
 
   if (!id) {
-    return retMsg.error400InvalidCall(res, 'ERROR_MISSING_PARAM', 'id');
+    return retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_MISSING_PARAM', 'id'));
   }
   else if (!pw) {
-    return retMsg.error400InvalidCall(res, 'ERROR_MISSING_PARAM', 'pw');
+    return retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_MISSING_PARAM', 'pw'));
   }
   else if (!name) {
-    return retMsg.error400InvalidCall(res, 'ERROR_MISSING_PARAM', 'name');
+    return retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_MISSING_PARAM', 'name'));
   }
 
   const user = userService.create(id, pw, name);
   if (user.errorCode) {
-    return retMsg.error400InvalidCall(res, user.errorCode, user.data);
+    return retMsg.error400InvalidCall(res, convertError400Data(accept).func(user.errorCode, user.data));
   }
 
-  const accept = req.header('Accept');
   const convertVal = convertUserData(accept);
 
   res.header('Last-Modified', user.updatedAt.toISOString());
@@ -96,27 +96,29 @@ exports.create = (req, res) => {
  * @param res
  */
 exports.update = (req, res) => {
+  const accept = req.header('Accept');
+  const {id} = req.params;
+  const {pw, name} = req.body;
 
-};
+  if (!pw) {
+    return retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_MISSING_PARAM', 'pw'));
+  }
+  else if (!name) {
+    return retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_MISSING_PARAM', 'name'));
+  }
 
-/**
- * 전체 user 일부 데이터 수정 Controller
- *
- * @param req
- * @param res
- */
-exports.patchAll = (req, res) => {
+  const user = userService.findOne(id);
+  if(!user) {
+    return retMsg.error404NotFound(res);
+  }
 
-};
+  user.pw = pw;
+  user.name = name;
+  user.updatedAt = new Date();
 
-/**
- * 특정 user 일부 데이터 수정
- *
- * @param req
- * @param res
- */
-exports.patch = (req, res) => {
-
+  return userService.update(user) === 1 ?
+    retMsg.success200(res) :
+    retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_UNKNOWN'));
 };
 
 /**
@@ -126,7 +128,12 @@ exports.patch = (req, res) => {
  * @param res
  */
 exports.destory = (req, res) => {
+  const accept = req.header('Accept');
+  const {id} = req.params;
 
+  return userService.delete(id) === 1 ?
+    retMsg.success200(res) :
+    retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_UNKNOWN'));
 };
 
 /**
@@ -141,7 +148,9 @@ exports.userDuplicateChecker = (req, res, next) => {
   const findUser = userService.findOne(id);
 
   if (findUser.id) {
-    return retMsg.error400InvalidCall(res, 'ERROR_DUPLICATE', 'id');
+    const accept = req.header('Accept');
+    return retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_MISSING_PARAM', 'id'));
+
   }
 
   return next();

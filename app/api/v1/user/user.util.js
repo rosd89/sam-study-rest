@@ -2,6 +2,13 @@ const defaultDataType = 'application/json';
 const xml2js = require('xml2js');
 const builder = new xml2js.Builder();
 
+const errorCodeMap = {
+  ERROR_UNKNOWN: 0,
+  ERROR_MISSING_PARAM: -1,
+  ERROR_INVALID_PARAM: -2,
+  ERROR_DUPLICATE: -3
+};
+
 /**
  * 유저 데이터 가져오기 Util
  *
@@ -31,14 +38,29 @@ exports.convertUserData = accept => {
  * @returns {{accept: *, func: *}}
  */
 exports.convertUsersData = accept => {
-  this.accept = accept;
   const funcIndex = {
     'application/json': usersToJson,
     'text/xml': usersToXml
   };
 
-  if (!funcIndex[this.accept]) {
-    this.accept = defaultDataType;
+  if (!funcIndex[accept]) {
+    accept = defaultDataType;
+  }
+
+  return {
+    accept,
+    func: funcIndex[this.accept]
+  };
+};
+
+exports.convertError400Data = accept => {
+  const funcIndex = {
+    'application/json': error400ToJson,
+    'text/xml': error400ToXml
+  };
+
+  if (!funcIndex[accept]) {
+    accept = defaultDataType;
   }
 
   return {
@@ -83,6 +105,20 @@ const usersToJson = (users, page, size, total) => {
 };
 
 /**
+ * Http 400 Error Msg - JSON
+ *
+ * @param errorCode
+ * @param data
+ * @returns {{errorCode: *, data: *}}
+ */
+const error400ToJson = (errorCode, data) => {
+  return {
+    errorCode: errorCodeMap[errorCode],
+    data: data // parameter name
+  }
+};
+
+/**
  * 유저 데이터 가져오기 - XML
  *
  * @param user
@@ -120,3 +156,18 @@ const usersToXml = (users, page, size, total) => {
     }
   });
 };
+
+/**
+ * Http 400 Error Msg - XML
+ *
+ * @param errorCode
+ * @param data
+ */
+const error400ToXml = (errorCode, data) => builder.buildObject({
+  error : {
+    '$' : {
+      errorCode,
+      data
+    }
+  }
+});
