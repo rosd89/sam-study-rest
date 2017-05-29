@@ -18,7 +18,7 @@ const errorCodeMap = {
 exports.convertUserData = accept => {
   const funcIndex = {
     'application/json': userToJson,
-    'text/xml': userToXml
+    'application/xml': userToXml
   };
 
   if (!funcIndex[accept]) {
@@ -40,7 +40,7 @@ exports.convertUserData = accept => {
 exports.convertUsersData = accept => {
   const funcIndex = {
     'application/json': usersToJson,
-    'text/xml': usersToXml
+    'application/xml': usersToXml
   };
 
   if (!funcIndex[accept]) {
@@ -49,14 +49,14 @@ exports.convertUsersData = accept => {
 
   return {
     accept,
-    func: funcIndex[this.accept]
+    func: funcIndex[accept]
   };
 };
 
 exports.convertError400Data = accept => {
   const funcIndex = {
     'application/json': error400ToJson,
-    'text/xml': error400ToXml
+    'application/xml': error400ToXml
   };
 
   if (!funcIndex[accept]) {
@@ -65,7 +65,7 @@ exports.convertError400Data = accept => {
 
   return {
     accept,
-    func: funcIndex[this.accept]
+    func: funcIndex[accept]
   };
 };
 
@@ -166,7 +166,7 @@ const usersToXml = (users, page, size, total) => {
 const error400ToXml = (errorCode, data) => builder.buildObject({
   error : {
     '$' : {
-      errorCode,
+      errorCode: errorCodeMap[errorCode],
       data
     }
   }

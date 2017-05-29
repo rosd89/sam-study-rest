@@ -12,6 +12,8 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.15.2",
+    "file-stream-rotator": "^0.1.0",
+    "morgan": "^1.8.2",
     "xml2js": "^0.4.17"
   }
 }

@@ -5,16 +5,25 @@ exports.undefinedCheck = v => v === undefined ? false : true;
 exports.success200 = res => res.status(200).send();
 
 // 200 - success return Model
-exports.success200RetObj = (res, obj) => res.status(200).send(obj);
+exports.success200RetObj = (res, obj) => {
+  res.body = JSON.stringify(obj);
+  return res.status(200).send(obj);
+};
 
 // 201 - success create
-exports.success201 = (res, obj) => res.status(201).send(obj);
+exports.success201 = (res, obj) => {
+  res.body = JSON.stringify(obj);
+  return res.status(201).send(obj);
+};
 
 // 204 - success delete
 exports.success204 = res => res.status(204).send();
 
 // 400 - error 인자값 누락
-exports.error400InvalidCall = (res, obj) => res.status(400).send(obj);
+exports.error400InvalidCall = (res, obj) => {
+  res.body = JSON.stringify(obj);
+  return res.status(400).send(obj);
+};
 
 // 401 - error 리소스 접근권한 없음
 exports.error401Unauthorized = res => res.status(401).send();
@@ -26,4 +35,7 @@ exports.error403Expired = res => res.status(403).send();
 exports.error404NotFound = res => res.status(404).send();
 
 // 500 - internal server error 서버 error
-exports.error500Server = (res, err) => res.status(500).send(err);
+exports.error500Server = (res, err) => {
+  res.body = obj.toString();
+  return res.status(500).send(err);
+};

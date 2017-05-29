@@ -2,6 +2,7 @@ const userService = require('./user.service');
 const {convertUserData, convertUsersData, convertError400Data} = require('./user.util');
 
 const retMsg = require('../util/return.msg');
+const {errorLog} = require('../../../logger/logger.morgan');
 
 /**
  * user 전체 리스트 가져오기 Controller

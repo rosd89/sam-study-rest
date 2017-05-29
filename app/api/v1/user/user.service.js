@@ -38,7 +38,6 @@ exports.findAll = (page, size) => {
     return 0;
   })[0].updatedAt;
 
-  console.log(lastUpdatedAt);
   return {
     total, users, lastUpdatedAt
   }
