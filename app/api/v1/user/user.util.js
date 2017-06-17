@@ -148,10 +148,10 @@ const usersToXml = (users, page, size, total) => {
   });
 
   return builder.buildObject({
-    '$': {
-      page, size, total
-    },
     users: {
+      '$': {
+        page, size, total
+      },
       user: obj
     }
   });

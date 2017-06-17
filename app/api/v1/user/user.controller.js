@@ -109,7 +109,7 @@ exports.update = (req, res) => {
   }
 
   const user = userService.findOne(id);
-  if(!user) {
+  if (!user) {
     return retMsg.error404NotFound(res);
   }
 
@@ -128,7 +128,7 @@ exports.update = (req, res) => {
  * @param req
  * @param res
  */
-exports.destory = (req, res) => {
+exports.destroy = (req, res) => {
   const accept = req.header('Accept');
   const {id} = req.params;
 

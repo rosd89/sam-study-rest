@@ -15,7 +15,6 @@ let USER_DATA = [
  *
  * @param page
  * @param size
- * @returns {{totalCnt: Number, users: Array.<*>, lastUpdatedTime: (Date|*|string|updatedAt)}}
  */
 exports.findAll = (page, size) => {
   const offset = page * size;
