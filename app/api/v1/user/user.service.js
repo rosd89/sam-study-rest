@@ -15,6 +15,7 @@ let USER_DATA = [
  *
  * @param page
  * @param size
+ * @returns {{totalCnt: Number, users: Array.<*>, lastUpdatedTime: (Date|*|string|updatedAt)}}
  */
 exports.findAll = (page, size) => {
   const offset = page * size;
@@ -62,25 +63,13 @@ exports.findOne = id => USER_DATA.filter(user => {
  * @param id
  * @param pw
  * @param name
- * @returns {{id: *, pw: *, name: *, updatedAt: Date, createdAt: Date}}
+ * @returns user
  */
 exports.create = (id, pw, name) => {
-  const user = new userData({
-    id, pw, name,
-    enable: 'enable',
-    updatedAt: new Date(),
-    createdAt: new Date()
-  });
-
+  const user = new userData(id, pw, name, 'enable', new Date(), new Date());
   USER_DATA.push(user);
 
-  return {
-    id: user.id,
-    pw: user.pw,
-    name: user.name,
-    updatedAt: user.updatedAt,
-    createdAt: user.createdAt
-  };
+  return user;
 };
 
 /**
@@ -108,7 +97,7 @@ exports.update = user => {
  */
 exports.delete = id => {
   try{
-    USER_DATA = USER_DATA.map(user => {
+    USER_DATA = USER_DATA.filter(user => {
       return user.id !== id;
     });
   } catch (err) {

@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const {
-  index, show, userDuplicateChecker, create, update, destroy
+  index, show, userDuplicateChecker, create, update, patchAll, patch, destory
 } = require('./user.controller.js');
 
 // ----------------------------
@@ -19,6 +19,6 @@ router.post('/', userDuplicateChecker, create);
 router.put('/:id', update);
 
 // 유저 삭제하기
-router.delete('/:id', destroy);
+router.delete('/:id', destory);
 
 module.exports = router;

@@ -109,7 +109,7 @@ exports.update = (req, res) => {
   }
 
   const user = userService.findOne(id);
-  if (!user) {
+  if(!user) {
     return retMsg.error404NotFound(res);
   }
 
@@ -128,12 +128,12 @@ exports.update = (req, res) => {
  * @param req
  * @param res
  */
-exports.destroy = (req, res) => {
+exports.destory = (req, res) => {
   const accept = req.header('Accept');
   const {id} = req.params;
 
   return userService.delete(id) === 1 ?
-    retMsg.success200(res) :
+    retMsg.success201(res) :
     retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_UNKNOWN'));
 };
 
@@ -148,10 +148,9 @@ exports.userDuplicateChecker = (req, res, next) => {
   const id = req.body.id;
   const findUser = userService.findOne(id);
 
-  if (findUser.id) {
+  if (findUser) {
     const accept = req.header('Accept');
     return retMsg.error400InvalidCall(res, convertError400Data(accept).func('ERROR_MISSING_PARAM', 'id'));
-
   }
 
   return next();
