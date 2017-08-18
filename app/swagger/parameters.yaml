@@ -1,0 +1,7 @@
+parameters:
+  pathId:
+    name: id
+    description: ObjectID
+    in: path
+    required: true
+    type: string

@@ -14,6 +14,8 @@
     "express": "^4.15.2",
     "file-stream-rotator": "^0.1.0",
     "morgan": "^1.8.2",
+    "swagger-jsdoc": "^1.9.7",
+    "swagger-ui-express": "^2.0.6",
     "xml2js": "^0.4.17"
   }
 }
