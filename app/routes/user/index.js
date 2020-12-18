@@ -66,4 +66,19 @@ router.get('/:id', (req, res) => {
   })
 })
 
+// 유저 생성 API
+router.post('/', (req, res) => {
+
+})
+
+// 유저 수정 API
+router.patch('/:id', (req, res) => {
+
+})
+
+// 유저 삭제 API
+router.delete('/:id', (req, res) => {
+
+})
+
 module.exports = router
