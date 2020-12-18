@@ -1,21 +1,24 @@
 {
-  "name": "rest",
+  "name": "sam-study-rest",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node bin/www.js",
+    "start": "node index",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosd89/sam-study-rest.git"
   },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rosd89/sam-study-rest/issues"
+  },
+  "homepage": "https://github.com/rosd89/sam-study-rest#readme",
   "dependencies": {
-    "body-parser": "^1.15.2",
-    "express": "^4.15.2",
-    "file-stream-rotator": "^0.1.0",
-    "morgan": "^1.8.2",
-    "swagger-jsdoc": "^1.9.7",
-    "swagger-ui-express": "^2.0.6",
-    "xml2js": "^0.4.17"
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
   }
 }
