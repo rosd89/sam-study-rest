@@ -19,6 +19,7 @@
   "homepage": "https://github.com/rosd89/sam-study-rest#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "node-uuid": "^1.4.8"
   }
 }
