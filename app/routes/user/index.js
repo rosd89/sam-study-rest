@@ -1,7 +1,7 @@
 const {Router} = require('express')
 
 const userModel = require('./user')
-const {getSalt, getExpiredTime} = require('../lib/hash')
+const {getSalt, getExpiredTime, getHash} = require('../lib/hash')
 
 const router = Router()
 
@@ -20,12 +20,6 @@ const userFindById = id => USER_DATA.find(user => {
   if (user.enable === 'disable') return false
   return user.id === id
 })
-
-/*
-TODO
-1. 유저 생성 salt를 사용하여 유저를 생성하도록 수정
-2. 로그인시 암호화를 사용해서 유저의 비밀번호를 비교
- */
 
 // 유저 목록을 조회 API
 router.get('/', (req, res) => {
@@ -85,8 +79,9 @@ router.post('/', (req, res) => {
     return
   }
 
+  const salt = getSalt()
   const now = new Date()
-  const user = new userModel(id, pw, name, 'enable', now, now)
+  const user = new userModel(id, salt, getHash(pw, salt), name, 'enable', now, now)
   USER_DATA.push(user)
 
   res.json({
@@ -107,7 +102,7 @@ router.post('/signin', (req, res) => {
     return
   }
 
-  if (user.pw !== pw) {
+  if (user.pw !== getHash(pw, user.salt)) {
     res.status(401).json({message: '입력하신 비밀번호가 올바르지 않습니다.'})
     return
   }
