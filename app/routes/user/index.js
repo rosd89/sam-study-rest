@@ -1,6 +1,7 @@
 const {Router} = require('express')
 
 const userModel = require('./user')
+const service = require('./user.service')
 const {getSalt, getExpiredTime, getHash} = require('../lib/hash')
 
 const router = Router()
@@ -58,12 +59,8 @@ router.get('/', (req, res) => {
 })
 
 // 유저 생성 API
-router.post('/', (req, res) => {
-  const {id, pw, name} = req.body
-  if (!id) {
-    res.status(400).json({message: '"id"가 입력되지 않았습니다.'})
-    return
-  }
+router.post('/', async (req, res) => {
+  const {pw, name} = req.body
   if (!pw) {
     res.status(400).json({message: '"pw"가 입력되지 않았습니다.'})
     return
@@ -73,19 +70,17 @@ router.post('/', (req, res) => {
     return
   }
 
-  const target = USER_DATA.find(user => user.id === id)
-  if (target) {
-    res.status(400).json({message: '지금 요청하신 ID는 이미 존재하는 유저입니다.'})
-    return
-  }
-
   const salt = getSalt()
-  const now = new Date()
-  const user = new userModel(id, salt, getHash(pw, salt), name, 'enable', now, now)
-  USER_DATA.push(user)
+  const user = {
+    salt,
+    pw: getHash(pw, salt),
+    name,
+    enabled: 'enable'
+  }
+  const [id] = await service.userCreate(user)
 
   res.json({
-    id: user.id,
+    id,
     name: user.name,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt

@@ -20,6 +20,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "knex": "^0.21.15",
+    "mysql": "^2.18.1",
     "node-uuid": "^1.4.8"
   }
 }
